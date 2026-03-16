@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE IF NOT EXISTS users (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  user_type VARCHAR(10) DEFAULT 'user',
+  api_call_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP DEFAULT NOW()
+);

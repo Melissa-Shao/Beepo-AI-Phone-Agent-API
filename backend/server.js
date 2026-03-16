@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
+const pool = require('./config/db');
 const app = express();
 
 app.use(cors());
