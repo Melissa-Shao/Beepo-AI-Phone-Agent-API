@@ -14,6 +14,8 @@ app.get("/", (req, res) => {
   res.send("Beepo backend running");
 });
 
+app.use('/auth', require('./routes/authRoutes'));
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
