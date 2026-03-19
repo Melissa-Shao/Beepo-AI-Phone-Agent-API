@@ -1,0 +1,67 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { STRINGS } from "../constants/strings";
+
+export default function Login({ onLogin }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await fetch("https://claudiale-comp4537.me/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || STRINGS.errorFailed);
+        return;
+      }
+
+      onLogin(data.token);
+      navigate("/");
+    } catch (err) {
+      setError(STRINGS.errorGeneric);
+    }
+  };
+
+  return (
+    <div id="register-modal">
+      <h2>{STRINGS.login}</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <div className="input-field">
+          <label>{STRINGS.email}</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="input-field">
+          <label>{STRINGS.password}</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">{STRINGS.login}</button>
+      </form>
+      <p>
+        {STRINGS.dontHave}
+        <a href="/register"> {STRINGS.register}</a>
+      </p>
+    </div>
+  );
+}

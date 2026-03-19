@@ -4,6 +4,7 @@ export const STRINGS = {
     email: 'Email',
     password: 'Password',
     alreadyHave: 'Already have an account?',
+    dontHave: `Don't have an account yet?`,
     login: 'Login',
     errorFailed: 'Registration failed',
     errorGeneric: 'Something went wrong. Please try again.',
