@@ -9,5 +9,7 @@ export const STRINGS = {
     errorFailed: 'Registration failed',
     errorGeneric: 'Something went wrong. Please try again.',
     forgotPassword: 'Forgot your password?',
-    sendResetLink: 'Send Reset Link'
+    sendResetLink: 'Send Reset Link',
+    resetPassword: 'Reset Password',
+    newPassword: 'New Password'
 };

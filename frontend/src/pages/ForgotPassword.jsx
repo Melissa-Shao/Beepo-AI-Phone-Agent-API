@@ -8,7 +8,7 @@ export default function ForgotPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('https://beepo-ai.app/auth/forgot-password', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/forgot-password`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),

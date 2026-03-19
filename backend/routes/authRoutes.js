@@ -125,7 +125,7 @@ router.post("/forgot-password", async (req, res) => {
 
 router.post("/reset-password", async (req, res) => {
   try {
-    const { token, password } = req.body;
+    const { token, newPassword } = req.body;
 
     const user = await pool.query(
       "SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()",
@@ -135,7 +135,7 @@ router.post("/reset-password", async (req, res) => {
       return res.status(400).json({ message: "Invalid or expired token." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     await pool.query(
       "UPDATE users SET password = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2",
       [hashedPassword, user.rows[0].id],
