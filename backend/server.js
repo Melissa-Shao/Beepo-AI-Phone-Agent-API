@@ -11,10 +11,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Beepo backend running");
-});
-
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/ai', require('./routes/aiRoutes'));
 

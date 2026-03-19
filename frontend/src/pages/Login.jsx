@@ -2,23 +2,28 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { STRINGS } from "../constants/strings";
 import "../styles/style.css";
+import { useAuth } from "../../utils/Authorization";
 
-export default function Login({ onLogin }) {
+export default function Login({}) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { signin } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        },
+      );
 
       const data = await response.json();
 
@@ -27,8 +32,7 @@ export default function Login({ onLogin }) {
         return;
       }
 
-      onLogin(data.token);
-      navigate("/");
+      signin({ token: data.token }, () => navigate("/"));
     } catch (err) {
       setError(STRINGS.errorGeneric);
     }
