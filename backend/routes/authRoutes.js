@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 const crypto = require("crypto");
-const resend = require("../config/mailer");
+const { resend } = require('../config/mailer');
 
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
