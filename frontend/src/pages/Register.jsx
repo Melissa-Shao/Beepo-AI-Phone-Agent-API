@@ -15,7 +15,7 @@ export default function Register() {
 
     try {
       const response = await fetch(
-        "https://claudiale-comp4537.me/auth/register",
+        "https://beepo-ai.app/auth/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

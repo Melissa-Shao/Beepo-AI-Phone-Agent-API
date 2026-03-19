@@ -13,7 +13,7 @@ export default function Login({ onLogin }) {
     setError("");
 
     try {
-      const response = await fetch("https://claudiale-comp4537.me/auth/login", {
+      const response = await fetch("https://beepo-ai.app/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
