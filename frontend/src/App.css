@@ -44,28 +44,3 @@ body {
 .read-the-docs {
   color: #888;
 }
-
-#register-modal {
-  background-color: white;
-  padding: 30px 60px;
-  border-radius: 15px;
-}
-
-#register-modal form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.input-field {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-
-input {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid grey;
-}

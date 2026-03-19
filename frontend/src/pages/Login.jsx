@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { STRINGS } from "../constants/strings";
+import "../styles/style.css";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -61,6 +62,10 @@ export default function Login({ onLogin }) {
       <p>
         {STRINGS.dontHave}
         <a href="/register"> {STRINGS.register}</a>
+        <br />
+        <a id="forgot-password" href="/forgot-password">
+          {STRINGS.forgotPassword}
+        </a>
       </p>
     </div>
   );

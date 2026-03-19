@@ -8,4 +8,6 @@ export const STRINGS = {
     login: 'Login',
     errorFailed: 'Registration failed',
     errorGeneric: 'Something went wrong. Please try again.',
+    forgotPassword: 'Forgot your password?',
+    sendResetLink: 'Send Reset Link'
 };
