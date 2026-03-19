@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import AiDemo from "./pages/AiDemo";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           path="/"
           element={isLoggedIn ? <Home /> : <Navigate to="/login" />}
         />
+        <Route path="/ai-demo" element={<AiDemo />} />
       </Routes>
     </BrowserRouter>
   );
