@@ -78,8 +78,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    // return JWT token for logged in user
-    // use in frontend, store in localStorage to identify user
+    // get JWT token for logged in user
     const token = jwt.sign(
       {
         id: user.rows[0].id,
@@ -108,26 +107,27 @@ router.post("/logout", (req, res) => {
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
-
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
+
     if (user.rows.length === 0) {
       return res
         .status(200)
         .json({ message: "If that email exists, a reset link was sent." });
     }
 
-    // create token that expires within 1 hour
-    const token = crypto.randomBytes(32).toString("hex");
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const hashedReset = await bcrypt.hash(resetToken, 10);
     const expires = new Date(Date.now() + 1000 * 60 * 60);
+
     await pool.query(
       "UPDATE users SET reset_token = $1, reset_token_expires = $2 WHERE email = $3",
-      [token, expires, email],
+      [hashedReset, expires, email],
     );
 
-    // reset link gets sent to email
-    const resetLink = `https://beepo-ai.app/reset-password?token=${token}`;
+    const resetLink = `https://beepo-ai.app/reset-password?token=${resetToken}`;
+
     await resend.emails.send({
       from: "noreply@beepo-ai.app",
       to: email,
@@ -145,15 +145,22 @@ router.post("/forgot-password", async (req, res) => {
 });
 
 router.post("/reset-password", async (req, res) => {
-  try {
-    const { token, newPassword } = req.body;
+  const { token, email, newPassword } = req.body;
 
-    const user = await pool.query(
-      "SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()",
-      [token],
-    );
+  try {
+    // search for user in db
+    const user = await pool.query("SELECT * FROM users WHERE email = $1", [
+      email,
+    ]);
     if (user.rows.length === 0) {
-      return res.status(400).json({ message: "Invalid or expired token." });
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // see if token matches and not expired
+    const validToken = await bcrypt.compare(token, user.rows[0].reset_token);
+    const isNotExpired = new Date() < new Date(user.rows[0].reset_token_expires);
+    if (!validToken || !isNotExpired) {
+      return res.status(400).json({ message: "Invalid or expired token" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
