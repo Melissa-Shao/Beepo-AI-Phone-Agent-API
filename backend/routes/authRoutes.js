@@ -4,7 +4,15 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 const crypto = require("crypto");
-const { resend } = require('../config/mailer');
+const { resend } = require("../config/mailer");
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  maxAge: 3600000,
+  domain: process.env.COOKIE_DOMAIN,
+};
 
 router.post("/register", async (req, res) => {
   const { username, email, password } = req.body;
@@ -37,10 +45,15 @@ router.post("/register", async (req, res) => {
         user_type: newUser.rows[0].user_type,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" },
+      { expiresIn: "1h" },
     );
 
-    res.status(201).json({ token });
+    res.cookie("token", token, cookieOptions);
+
+    res.status(200).json({
+      message: "Success",
+      user_type: newUser.rows[0].user_type,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
@@ -74,14 +87,22 @@ router.post("/login", async (req, res) => {
         user_type: user.rows[0].user_type,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" },
+      { expiresIn: "1h" },
     );
 
-    res.status(200).json({ token, user_type: user.rows[0].user_type });
+    res.cookie("token", token, cookieOptions);
+
+    res.status(200).json({ user_type: user.rows[0].user_type });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
+});
+
+router.post("/logout", (req, res) => {
+  const { maxAge, ...clearOptions } = cookieOptions;
+  res.clearCookie("token", clearOptions);
+  res.json({ message: "Logged out" });
 });
 
 router.post("/forgot-password", async (req, res) => {

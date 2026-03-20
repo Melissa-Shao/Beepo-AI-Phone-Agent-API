@@ -3,19 +3,18 @@ import { useState, useContext, createContext } from 'react';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const token = localStorage.getItem("token");
-    return token ? {token} : null;
-  });
+  const [user, setUser] = useState(null);
 
   const signin = (newUser, callback) => {
-    localStorage.setItem("token", newUser.token);
     setUser(newUser);
     callback();
   };
 
-  const signout = (callback) => {
-    localStorage.removeItem("token");
+  const signout = async (callback) => {
+    await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
     setUser(null);
     callback();
   };

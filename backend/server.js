@@ -2,13 +2,21 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
+const cookieParser = require('cookie-parser');
 
 dotenv.config();
 
 const pool = require('./config/db');
 const app = express();
 
-app.use(cors());
+app.use(cookieParser());
+app.use(cors({
+  origin: [
+    'https://beepo-ai-phone-agent-api.vercel.app', 
+    'http://localhost:5173'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/auth', require('./routes/authRoutes'));

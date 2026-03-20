@@ -15,6 +15,7 @@ export default function AiDemo() {
     try {
       const res = await fetch(import.meta.env.VITE_API_URL + "/ai/test", {
         method: "POST",
+        credentials: 'include',
         headers: {
           "Content-Type": "application/json",
         },
