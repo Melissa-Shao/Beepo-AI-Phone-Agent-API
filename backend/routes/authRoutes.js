@@ -128,7 +128,7 @@ router.post("/forgot-password", async (req, res) => {
       [hashedReset, expires, email],
     );
 
-    const resetLink = `https://beepo-ai.app/reset-password?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
     await resend.emails.send({
       from: "noreply@beepo-ai.app",
