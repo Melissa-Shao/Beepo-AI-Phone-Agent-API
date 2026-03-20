@@ -15,7 +15,8 @@ const cookieOptions = {
 };
 
 router.post("/register", async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, password } = req.body;
+  const email = req.body.email.toLowerCase();
 
   try {
     // determines if user exists in db
@@ -61,7 +62,8 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = req.body.email.toLowerCase();
 
   try {
     // search for user in db
@@ -106,7 +108,7 @@ router.post("/logout", (req, res) => {
 
 router.post("/forgot-password", async (req, res) => {
   try {
-    const { email } = req.body;
+    const email = req.body.email.toLowerCase();
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [
       email,
     ]);
@@ -145,7 +147,8 @@ router.post("/forgot-password", async (req, res) => {
 });
 
 router.post("/reset-password", async (req, res) => {
-  const { token, email, newPassword } = req.body;
+  const { token, newPassword } = req.body;
+  const email = req.body.email.toLowerCase();
 
   try {
     // search for user in db
@@ -157,8 +160,12 @@ router.post("/reset-password", async (req, res) => {
     }
 
     // see if token matches and not expired
+    if (!user.rows[0].reset_token) {
+      return res.status(400).json({ message: "No reset requested." });
+    }
     const validToken = await bcrypt.compare(token, user.rows[0].reset_token);
-    const isNotExpired = new Date() < new Date(user.rows[0].reset_token_expires);
+    const isNotExpired =
+      new Date() < new Date(user.rows[0].reset_token_expires);
     if (!validToken || !isNotExpired) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
