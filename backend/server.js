@@ -21,6 +21,9 @@ app.use(express.json());
 
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/ai', require('./routes/aiRoutes'));
+app.use('/dashboard/admin', require('./routes/adminDashboard'));
+app.use('/dashboard/user', require('./routes/userDashboard'));
+
 
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 app.get('/{*path}', (req, res) => {

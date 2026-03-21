@@ -16,4 +16,11 @@ const verifyToken = (req, res, next) => {
   }
 };
 
+const verifyAdmin = (req, res, next) => {
+  if (req.user?.user_type !== 'admin') {
+    return res.status(401).json({ message: "Forbidden" });
+  }
+  next();
+};
+
 module.exports = verifyToken;
