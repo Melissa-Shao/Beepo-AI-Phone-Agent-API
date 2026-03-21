@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
 const crypto = require("crypto");
 const { resend } = require("../config/mailer");
-const { requireAuth } = require("../middleware/authMiddleware");
+const { verifyToken } = require("../middleware/authMiddleware");
 
 const cookieOptions = {
   httpOnly: true,
@@ -101,7 +101,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/logout", requireAuth, (req, res) => {
+router.post("/logout", verifyToken, (req, res) => {
   const { maxAge, ...clearOptions } = cookieOptions;
   res.clearCookie("token", clearOptions);
   res.json({ message: "Logged out" });

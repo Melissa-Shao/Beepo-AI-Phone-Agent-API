@@ -23,4 +23,4 @@ const verifyAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = verifyToken;
+module.exports = {verifyToken, verifyAdmin};

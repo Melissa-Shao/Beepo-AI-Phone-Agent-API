@@ -25,10 +25,10 @@ app.use('/dashboard/admin', require('./routes/adminDashboard'));
 app.use('/dashboard/user', require('./routes/userDashboard'));
 
 
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
-app.get('/{*path}', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
-});
+// app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// app.get('/{*path}', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+// });
 
 const PORT = process.env.PORT || 5000;
 
