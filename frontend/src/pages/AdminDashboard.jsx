@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const [totalUsers, setTotalUsers] = useState(0);
@@ -60,6 +61,9 @@ export default function AdminDashboard() {
       <h2>System Stats</h2>
       <p>Total users: {totalUsers}</p>
       <p>Total API calls: {totalApiCalls}</p>
+      <Link to="/ai-demo">
+        Try AI Demo
+      </Link>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 
 export default function UserDashboard() {
   const [myApiCalls, setMyApiCalls] = useState(0);
@@ -60,6 +61,9 @@ export default function UserDashboard() {
       <h1>User Dashboard</h1>
       <h2>My API Usage</h2>
       <p>API calls used: {myApiCalls}</p>
+      <Link to="/ai-demo">
+        Try AI Demo
+      </Link>
     </div>
   );
 }
