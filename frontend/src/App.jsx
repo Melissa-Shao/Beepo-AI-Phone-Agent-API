@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.css";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -8,7 +7,9 @@ import ResetPassword from "./pages/ResetPassword";
 import AiDemo from "./pages/AiDemo";
 import { AuthProvider } from "../utils/Authorization";
 import ProtectedRoute from "../utils/ProtectedRoute";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import UserDashboard from "./pages/UserDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -25,6 +26,8 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Home />} />
             <Route path="/ai-demo" element={<AiDemo />} />
+            <Route path="/user-dashboard" element={<UserDashboard />} />
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
           </Route>
         </Routes>
       </BrowserRouter>

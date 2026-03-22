@@ -20,6 +20,7 @@ export default function Login({}) {
         `${import.meta.env.VITE_API_URL}/auth/login`,
         {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
         },
@@ -31,9 +32,18 @@ export default function Login({}) {
         setError(data.message || STRINGS.errorFailed);
         return;
       }
+      
+      // Decide where to go after login based on user type
+      const redirectPath =
+      data.user_type === "admin" ? "/admin-dashboard" : "/user-dashboard";  
 
-      signin({ token: data.token }, () => navigate("/"));
+
+
+      signin({ token: data.token, user_type: data.user_type }, () =>
+        navigate(redirectPath)
+      );
     } catch (err) {
+      console.error(err);
       setError(STRINGS.errorGeneric);
     }
   };
