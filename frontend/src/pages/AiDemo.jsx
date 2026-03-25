@@ -4,19 +4,19 @@ import "../App.css";
 export default function AiDemo() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [goal, setGoal] = useState("");
-  const [conversation, setConversation] = useState("");
-  const [summary, setSummary] = useState("");
+  const [result, setResult] = useState("");
+  const [callSid, setCallSid] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleGenerate = async () => {
+  const handleCall = async () => {
     if (!phoneNumber || !goal) return;
 
     setLoading(true);
-    setConversation("");
-    setSummary("");
+    setResult("");
+    setCallSid("");
 
     try {
-      const res = await fetch(import.meta.env.VITE_API_URL + "/ai/generate-conversation", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/calls/start`, {
         method: "POST",
         credentials: 'include',
         headers: {
@@ -26,27 +26,32 @@ export default function AiDemo() {
       });
 
       const data = await res.json();
-      if (data.status === "success") {
-        setConversation(data.conversation || "");
-        setSummary(data.summary || "");
-      } else {
-        setConversation("Error generating response");
+
+      if (!res.ok) {
+        setResult(data.message || "Failed to start call");
+        setLoading(false);
+        return;
       }
+
+      setCallSid(data.callSid || "");
+      setResult(
+        `Call started successfully.\n\nAI opening line:\n${data.openingLine}`
+      );
     } catch (err) {
       console.error(err);
-      setConversation("Error generating response");
+      setResult("Error starting call");
     }
     setLoading(false);
   };
 
   return (
     <div className="ai-container">
-      <h2>📞 Beepo AI Phone Agent Demo</h2>
+      <h2>📞 Beepo AI Phone Agent</h2>
 
       <input
         type="text"
         className="ai-textarea"
-        placeholder="Phone number, e.g. 555-123-4567"
+        placeholder="Phone number, e.g. +16045551234"
         value={phoneNumber}
         onChange={(e) => setPhoneNumber(e.target.value)}
       />
@@ -57,26 +62,20 @@ export default function AiDemo() {
         onChange={(e) => setGoal(e.target.value)}
       />
 
-      <button className="ai-button" onClick={handleGenerate}>
+      <button className="ai-button" onClick={handleCall}>
         Call Beepo Agent 
       </button>
 
       {loading && <p>Generating...</p>}
 
-      {conversation && (
-        <div className="ai-result">
-          <h3>Conversation</h3>
-          {conversation}
+      {callSid && <p>Call SID: {callSid}</p>}
+
+      {result && (
+        <div className="ai-result" style={{ whiteSpace: "pre-line" }}>
+          {result}
         </div>
       )}
 
-      {summary && (
-        <div className="ai-result">
-          <h3>Summary</h3>
-          <p>{summary}</p>
-        </div>
-      )}
-      
     </div>
   );
 }

@@ -23,12 +23,17 @@ app.use('/auth', require('./routes/authRoutes'));
 app.use('/ai', require('./routes/aiRoutes'));
 app.use('/dashboard/admin', require('./routes/adminDashboard'));
 app.use('/dashboard/user', require('./routes/userDashboard'));
-
+app.use("/calls", require("./routes/callRoutes"));
+app.use("/twilio", require("./routes/twilioRoutes"));
 
 // app.use(express.static(path.join(__dirname, '../frontend/dist')));
 // app.get('/{*path}', (req, res) => {
 //   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 // });
+
+app.get("/", (req, res) => {
+  res.send("Beepo backend running");
+});
 
 const PORT = process.env.PORT || 5000;
 
