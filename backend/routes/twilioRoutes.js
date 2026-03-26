@@ -2,8 +2,47 @@ const express = require("express");
 const router = express.Router();
 const twilio = require("twilio");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
+const pool = require("../config/db");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+async function getCallRequestBySid(callSid) {
+  const result = await pool.query(
+    `
+    SELECT id, goal, status
+    FROM call_requests
+    WHERE twilio_call_sid = $1
+    LIMIT 1
+    `,
+    [callSid]
+  );
+
+  return result.rows[0] || null;
+}
+
+async function saveTranscript(callRequestId, speaker, message) {
+  await pool.query(
+    `
+    INSERT INTO call_transcripts (call_request_id, speaker, message)
+    VALUES ($1, $2, $3)
+    `,
+    [callRequestId, speaker, message]
+  );
+}
+
+async function completeCall(callRequestId, summary) {
+  await pool.query(
+    `
+    UPDATE call_requests
+    SET status = $1,
+        outcome_summary = $2,
+        completed_at = NOW(),
+        updated_at = NOW()
+    WHERE id = $3
+    `,
+    ["completed", summary, callRequestId]
+  );
+}
 
 // POST /twilio/voice
 router.post("/voice", (req, res) => {
@@ -47,15 +86,35 @@ router.post("/voice", (req, res) => {
 router.post("/respond", async (req, res) => {
   try {
     const userSpeech = (req.body.SpeechResult || "").trim();
-    const goal = req.query.goal || "";
+    const callSid = req.body.CallSid;
+    const queryGoal = req.query.goal || "";
     const turn = Number(req.query.turn || 1);
-
-
-    console.log("SpeechResult:", userSpeech);
-    console.log("Goal:", goal);
-    console.log("Turn:", turn);
-
     const twiml = new twilio.twiml.VoiceResponse();
+
+    if (!callSid) {
+      twiml.say(
+        { voice: "alice", language: "en-US" },
+        "Sorry, the call session was not found. Goodbye."
+      );
+      twiml.hangup();
+      res.type("text/xml");
+      return res.send(twiml.toString());
+    }
+
+    const callRequest = await getCallRequestBySid(callSid);
+
+    if (!callRequest) {
+      twiml.say(
+        { voice: "alice", language: "en-US" },
+        "Sorry, the call record was not found. Goodbye."
+      );
+      twiml.hangup();
+      res.type("text/xml");
+      return res.send(twiml.toString());
+    }
+
+    const callRequestId = callRequest.id;
+    const goal = callRequest.goal || queryGoal;
 
     if (!userSpeech) {
       const retryGather = twiml.gather({
@@ -77,9 +136,14 @@ router.post("/respond", async (req, res) => {
       );
       twiml.hangup();
 
+      await completeCall(callRequestId, "Call ended due to no speech input.");
+
       res.type("text/xml");
       return res.send(twiml.toString());
     }
+
+    // save caller speech
+    await saveTranscript(callRequestId, "user", userSpeech);
 
     // 
     const normalized = userSpeech.toLowerCase();
@@ -95,9 +159,14 @@ router.post("/respond", async (req, res) => {
       normalized.includes("no thank you");
 
     if (wantsToEnd) {
+      const goodbyeMessage = "You're welcome. Goodbye.";
+
+      await saveTranscript(callRequestId, "assistant", goodbyeMessage);
+      await completeCall(callRequestId, "Caller ended the conversation.");
+
       twiml.say(
         { voice: "alice", language: "en-US" },
-        "You're welcome. Goodbye."
+        goodbyeMessage
       );
       twiml.hangup();
 
@@ -107,9 +176,13 @@ router.post("/respond", async (req, res) => {
 
     // limit the number of turns to testing for now
     if (turn > 10) {
+      const closingMessage = "Thank you for the conversation. Goodbye.";
+      await saveTranscript(callRequestId, "assistant", closingMessage);
+      await completeCall(callRequestId, "Call ended after reaching the turn limit.");
+
       twiml.say(
         { voice: "alice", language: "en-US"},
-        "You are running out of turns. Thank you for the conversation. Goodbye."
+        closingMessage
       );
       twiml.hangup();
 
@@ -142,7 +215,9 @@ router.post("/respond", async (req, res) => {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const aiReply = response.text().trim();
-    console.log("AI Reply:", aiReply);
+
+    // save assistant reply
+    await saveTranscript(callRequestId, "assistant", aiReply);
 
     twiml.say({ voice: "alice", language: "en-US"}, aiReply);
 
