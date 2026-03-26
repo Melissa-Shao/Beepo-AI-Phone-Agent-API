@@ -58,9 +58,22 @@ router.post("/respond", async (req, res) => {
     const twiml = new twilio.twiml.VoiceResponse();
 
     if (!userSpeech) {
+      const retryGather = twiml.gather({
+        input: ["speech"],
+        action: `${process.env.PUBLIC_BASE_URL}/twilio/respond?goal=${encodeURIComponent(goal)}&turn=${turn}`,
+        method: "POST",
+        speechTimeout: "auto",
+        timeout: 5,
+      });
+
+      retryGather.say(
+        { voice: "alice", language: "en-US" },
+        "Sorry, I did not catch that. Please say that again."
+      );
+
       twiml.say(
-        { voice: "alice", language: "en-US"},
-        "Sorry, I did not catch that. Goodbye."
+        { voice: "alice", language: "en-US" },
+        "I still did not hear anything. Goodbye."
       );
       twiml.hangup();
 
@@ -70,11 +83,18 @@ router.post("/respond", async (req, res) => {
 
     // 
     const normalized = userSpeech.toLowerCase();
-    if (
+
+    const wantsToEnd =
       normalized.includes("goodbye") ||
       normalized.includes("bye") ||
-      normalized.includes("thank you")
-    ) {
+      normalized.includes("thank you") ||
+      normalized.includes("thanks, bye") ||
+      normalized.includes("that's all") ||
+      normalized.includes("that is all") ||
+      normalized.includes("no thanks") ||
+      normalized.includes("no thank you");
+
+    if (wantsToEnd) {
       twiml.say(
         { voice: "alice", language: "en-US" },
         "You're welcome. Goodbye."
@@ -86,10 +106,10 @@ router.post("/respond", async (req, res) => {
     }
 
     // limit the number of turns to testing for now
-    if (turn > 3) {
+    if (turn > 10) {
       twiml.say(
         { voice: "alice", language: "en-US"},
-        "Thanks for the information. We will follow up soon. Goodbye."
+        "You are running out of turns. Thank you for the conversation. Goodbye."
       );
       twiml.hangup();
 
