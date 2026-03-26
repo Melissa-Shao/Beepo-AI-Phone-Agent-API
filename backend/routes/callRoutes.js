@@ -45,11 +45,12 @@ router.post("/start", async (req, res) => {
     const openingLine = response.text().trim();
 
     const encodedText = encodeURIComponent(openingLine);
+    const encodedGoal = encodeURIComponent(goal);
 
     const call = await twilioClient.calls.create({
       to: phone_number,
       from: process.env.TWILIO_PHONE_NUMBER,
-      url: `${process.env.PUBLIC_BASE_URL}/twilio/voice?text=${encodedText}`,
+      url: `${process.env.PUBLIC_BASE_URL}/twilio/voice?text=${encodedText}&goal=${encodedGoal}&turn=1`,
       method: "POST",
     });
 
@@ -62,9 +63,9 @@ router.post("/start", async (req, res) => {
     });
   } catch (err) {
     console.error("Twilio call start error:", err);
-    res.status(500).json({
+    res.status(err.status || 500).json({
       status: "error",
-      message: "Failed to start call",
+      message: err.message || "Failed to start call",
     });
   }
 });

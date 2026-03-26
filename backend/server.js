@@ -18,7 +18,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: false }));
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/ai', require('./routes/aiRoutes'));
 app.use('/dashboard/admin', require('./routes/adminDashboard'));
