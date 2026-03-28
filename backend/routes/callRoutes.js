@@ -4,6 +4,7 @@ const twilio = require("twilio");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const pool = require("../config/db");
 const { verifyToken } = require("../middleware/authMiddleware");
+const {logApiUsage,getUserApiUsage,FREE_API_LIMIT} = require("../services/apiUsageService");
 
 const twilioClient = twilio(
   process.env.TWILIO_ACCOUNT_SID,
@@ -16,7 +17,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 router.post("/start", verifyToken, async (req, res) => {
   const { phone_number, goal } = req.body;
   const user_id = req.user.id;
-  console.log("USER:", req.user);
+
   if (!phone_number || !goal) {
     return res.status(400).json({
       status: "error",
@@ -46,6 +47,12 @@ router.post("/start", verifyToken, async (req, res) => {
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const openingLine = response.text().trim();
+
+    // log successful Gemini usage for opening line generation
+    await logApiUsage(user_id, "/calls/start", "POST", 200);
+    // Get updated API count and free-limit status
+    const apiCallCount = await getUserApiUsage(user_id);
+    const overFreeLimit = apiCallCount >= FREE_API_LIMIT;
 
     // 1. create call_requests row
     const insertCallResult = await pool.query(
@@ -95,6 +102,9 @@ router.post("/start", verifyToken, async (req, res) => {
       phone_number,
       goal,
       openingLine,
+      apiCallCount,
+      freeLimit: FREE_API_LIMIT,
+      overFreeLimit,
     });
   } catch (err) {
     console.error("Twilio call start error:", err);
