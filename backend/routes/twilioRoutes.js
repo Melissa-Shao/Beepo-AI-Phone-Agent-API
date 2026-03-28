@@ -3,13 +3,14 @@ const router = express.Router();
 const twilio = require("twilio");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const pool = require("../config/db");
+const { logApiUsage } = require("../services/apiUsageService");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function getCallRequestBySid(callSid) {
   const result = await pool.query(
     `
-    SELECT id, goal, status
+    SELECT id, user_id, goal, status
     FROM call_requests
     WHERE twilio_call_sid = $1
     LIMIT 1
@@ -218,6 +219,8 @@ router.post("/respond", async (req, res) => {
 
     // save assistant reply
     await saveTranscript(callRequestId, "assistant", aiReply);
+
+    await logApiUsage(callRequest.user_id, "/twilio/respond", "POST", 200);
 
     twiml.say({ voice: "alice", language: "en-US"}, aiReply);
 
