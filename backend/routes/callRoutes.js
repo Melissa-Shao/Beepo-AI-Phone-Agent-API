@@ -115,4 +115,68 @@ router.post("/start", verifyToken, async (req, res) => {
   }
 });
 
+// GET /calls/history
+router.get("/history", verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      `
+      SELECT id, phone_number, goal, status, outcome_summary, created_at, completed_at
+      FROM call_requests
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+      `,
+      [userId]
+    );
+
+    res.json({
+      calls: result.rows,
+    });
+  } catch (err) {
+    console.error("Fetch call history error:", err);
+    res.status(500).json({ message: "Failed to fetch call history" });
+  }
+});
+
+// GET /calls/:id
+router.get("/:id", verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const callId = req.params.id;
+
+    const callResult = await pool.query(
+      `
+      SELECT id, user_id, phone_number, goal, status, outcome_summary, created_at, completed_at
+      FROM call_requests
+      WHERE id = $1 AND user_id = $2
+      LIMIT 1
+      `,
+      [callId, userId]
+    );
+
+    if (callResult.rows.length === 0) {
+      return res.status(404).json({ message: "Call not found" });
+    }
+
+    const transcriptResult = await pool.query(
+      `
+      SELECT speaker, message, created_at
+      FROM call_transcripts
+      WHERE call_request_id = $1
+      ORDER BY created_at ASC, id ASC
+      `,
+      [callId]
+    );
+
+    res.json({
+      call: callResult.rows[0],
+      transcripts: transcriptResult.rows,
+    });
+  } catch (err) {
+    console.error("Fetch call detail error:", err);
+    res.status(500).json({ message: "Failed to fetch call detail" });
+  }
+});
+
 module.exports = router;

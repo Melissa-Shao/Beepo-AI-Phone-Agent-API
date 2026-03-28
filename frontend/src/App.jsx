@@ -10,6 +10,7 @@ import ProtectedRoute from "../utils/ProtectedRoute";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UserDashboard from "./pages/UserDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import CallDetail from "./pages/CallDetail";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/ai-demo" element={<AiDemo />} />
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/calls/:id" element={<CallDetail />} />
           </Route>
         </Routes>
       </BrowserRouter>
