@@ -11,7 +11,9 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(255) NOT NULL,
   user_type VARCHAR(10) DEFAULT 'user',
   api_call_count INTEGER DEFAULT 0,
-  created_at TIMESTAMP DEFAULT NOW()
+  created_at TIMESTAMP DEFAULT NOW(),
+  reset_token VARCHAR(255),
+  reset_token_expires TIMESTAMP
 );
 
 -- CALL REQUESTS TABLE
