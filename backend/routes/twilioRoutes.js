@@ -45,6 +45,30 @@ async function completeCall(callRequestId, summary) {
   );
 }
 
+async function getRecentTranscripts(callRequestId, limit = 12) {
+  const result = await pool.query(
+    `
+    SELECT speaker, message, created_at
+    FROM call_transcripts
+    WHERE call_request_id = $1
+    ORDER BY created_at DESC, id DESC
+    LIMIT $2
+    `,
+    [callRequestId, limit]
+  );
+
+  return result.rows.reverse();
+}
+
+function buildConversationHistory(transcripts) {
+  return transcripts
+    .map((item) => {
+      const role = item.speaker === "assistant" ? "Beepo" : "Caller";
+      return `${role}: ${item.message}`;
+    })
+    .join("\n");
+}
+
 // POST /twilio/voice
 router.post("/voice", (req, res) => {
   try {
@@ -64,8 +88,8 @@ router.post("/voice", (req, res) => {
     });
 
     gather.say(
-      { voice: "alice", language: "en-US" },
-      "Please tell me how I can help you."
+      { voice: "alice", language: "en-US"},
+      "I'm listening."
     );
 
     twiml.say(
@@ -191,6 +215,9 @@ router.post("/respond", async (req, res) => {
       return res.send(twiml.toString());
     }
 
+    const recentTranscripts = await getRecentTranscripts(callRequestId, 12);
+    const conversationHistory = buildConversationHistory(recentTranscripts);
+
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
     });
@@ -198,17 +225,24 @@ router.post("/respond", async (req, res) => {
     const prompt = `
       You are Beepo, an AI phone agent in an active phone call.
 
-      Goal: ${goal}
+      Call goal:
+      ${goal}
 
-      The caller just said:
+      Conversation so far:
+      ${conversationHistory}
+
+      Latest caller message:
       ${userSpeech}
 
-      Reply naturally and briefly for a phone conversation.
-
-      Rules:
+      Behavior rules:
+      - Continue the conversation naturally based on the prior context
+      - Do not repeat questions that were already asked and answered
+      - Respond to the caller's latest message first
+      - Ask at most one short follow-up question only if it is needed
+      - If enough information has already been provided, move the call forward
+      - Avoid generic repetition such as "How can I help you?" or "Can you tell me more?" unless necessary
+      - Keep the reply brief, warm, and human
       - Keep it under 2 sentences
-      - Be polite and conversational
-      - Ask one clear follow-up question if needed
       - Do not use bullet points
       - Do not use quotation marks
     `;
