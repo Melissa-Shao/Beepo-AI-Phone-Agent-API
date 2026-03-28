@@ -49,38 +49,40 @@ export default function Login({}) {
   };
 
   return (
-    <div id="register-modal">
-      <h2>{STRINGS.login}</h2>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div className="input-field">
-          <label>{STRINGS.email}</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className="input-field">
-          <label>{STRINGS.password}</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">{STRINGS.login}</button>
-      </form>
-      <p>
-        {STRINGS.dontHave}
-        <a href="/register"> {STRINGS.register}</a>
-        <br />
-        <a id="forgot-password" href="/forgot-password">
-          {STRINGS.forgotPassword}
-        </a>
-      </p>
+    <div className="main-container">
+      <div id="register-modal">
+        <h2>{STRINGS.login}</h2>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="input-field">
+            <label>{STRINGS.email}</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          <div className="input-field">
+            <label>{STRINGS.password}</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit">{STRINGS.login}</button>
+        </form>
+        <p>
+          {STRINGS.dontHave}
+          <a href="/register"> {STRINGS.register}</a>
+          <br />
+          <a id="forgot-password" href="/forgot-password">
+            {STRINGS.forgotPassword}
+          </a>
+        </p>
+      </div>
     </div>
   );
 }
