@@ -38,10 +38,10 @@ export default function UserDashboard() {
     fetchUserStats();
   }, []);
 
-  if (loading) {
+if (loading) {
     return (
-      <div>
-        <h1>User Dashboard</h1>
+      <div className="dashboard-page">
+        <h1 className="dashboard-title">User Dashboard</h1>
         <p>Loading...</p>
       </div>
     );
@@ -49,20 +49,29 @@ export default function UserDashboard() {
 
   if (error) {
     return (
-      <div>
-        <h1>User Dashboard</h1>
+      <div className="dashboard-page">
+        <h1 className="dashboard-title">User Dashboard</h1>
         <p>{error}</p>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1>User Dashboard</h1>
-      <h2>My API Usage</h2>
-      <p>API calls used: {myApiCalls}</p>
-      <Link to="/ai-demo">
-        Try AI Demo
+    <div className="dashboard-page">
+      <h1 className="dashboard-title">User Dashboard</h1>
+
+      <section className="dashboard-section">
+        <h2 className="dashboard-subtitle">My API Usage</h2>
+
+        <div className="stats-grid">
+          <div className="stats-card">
+            <h3>API Calls Used</h3>
+            <p>{myApiCalls}</p>
+          </div>
+        </div>
+      </section>
+      <Link to="/ai-demo" className="dashboard-link">
+        Call Beepo AI Agent
       </Link>
     </div>
   );
