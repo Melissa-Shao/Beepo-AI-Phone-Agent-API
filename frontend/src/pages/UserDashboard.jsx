@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export default function UserDashboard() {
   const [myApiCalls, setMyApiCalls] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserStats = async () => {
@@ -38,7 +39,21 @@ export default function UserDashboard() {
     fetchUserStats();
   }, []);
 
-if (loading) {
+   const handleGoToAiDemo = () => {
+    if (myApiCalls >= 20) {
+      const confirmed = window.confirm(
+        `You have exceeded the 20 free API calls limit (${myApiCalls}/20).\n\nDo you want to continue?`
+      );
+
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    navigate("/ai-demo");
+  };
+
+  if (loading) {
     return (
       <div className="dashboard-page">
         <h1 className="dashboard-title">User Dashboard</h1>
@@ -66,13 +81,13 @@ if (loading) {
         <div className="stats-grid">
           <div className="stats-card">
             <h3>API Calls Used</h3>
-            <p>{myApiCalls}</p>
+            <p>{myApiCalls} / 20</p>
           </div>
         </div>
       </section>
-      <Link to="/ai-demo" className="dashboard-link">
+      <button className="dashboard-link" onClick={handleGoToAiDemo}>
         Call Beepo AI Agent
-      </Link>
+      </button>
     </div>
   );
 }

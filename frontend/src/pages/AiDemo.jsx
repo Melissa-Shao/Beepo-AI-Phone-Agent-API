@@ -34,9 +34,16 @@ export default function AiDemo() {
       }
 
       setCallSid(data.callSid || "");
-      setResult(
-        `Call started successfully.\n\nAI opening line:\n${data.openingLine}`
-      );
+
+      let message = `Call started successfully.\n\nAI opening line:\n${data.openingLine}`;
+
+      if (data.overFreeLimit) {
+        message =
+          `⚠️ Warning: You have exceeded the free API call limit (${data.apiCallCount}/${data.freeLimit}).\n\n` +
+          message;
+      }
+
+      setResult(message);
     } catch (err) {
       console.error(err);
       setResult("Error starting call");
