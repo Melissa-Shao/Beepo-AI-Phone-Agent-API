@@ -1,33 +1,39 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function UserDashboard() {
   const [myApiCalls, setMyApiCalls] = useState(0);
+  const [calls, setCalls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchUserStats = async () => {
+   useEffect(() => {
+    const fetchUserData = async () => {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/dashboard/user/stats`,
-          {
+        const [statsRes, historyRes] = await Promise.all([
+          fetch(`${import.meta.env.VITE_API_URL}/dashboard/user/stats`, {
             method: "GET",
             credentials: "include",
-          }
-        );
+          }),
+          fetch(`${import.meta.env.VITE_API_URL}/calls/history`, {
+            method: "GET",
+            credentials: "include",
+          }),
+        ]);
 
-        if (!res.ok) {
+        if (!statsRes.ok || !historyRes.ok) {
           throw new Error("Failed to fetch user dashboard data");
         }
 
-        const data = await res.json();
+        const statsData = await statsRes.json();
+        const historyData = await historyRes.json();
 
         const count =
-          data?.myApiCalls?.api_call_count ?? data?.myApiCalls ?? 0;
+          statsData?.myApiCalls?.api_call_count ?? statsData?.myApiCalls ?? 0;
 
         setMyApiCalls(count);
+        setCalls(historyData.calls || []);
       } catch (err) {
         console.error(err);
         setError("Unable to load user dashboard.");
@@ -36,7 +42,7 @@ export default function UserDashboard() {
       }
     };
 
-    fetchUserStats();
+    fetchUserData();
   }, []);
 
    const handleGoToAiDemo = () => {
@@ -83,11 +89,69 @@ export default function UserDashboard() {
             <h3>API Calls Used</h3>
             <p>{myApiCalls} / 20</p>
           </div>
+
+          <div
+            className="stats-card stats-card-action"
+            onClick={handleGoToAiDemo}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                handleGoToAiDemo();
+              }
+            }}
+            >
+            <h3>AI Phone Agent</h3>
+            <p className="stats-action-text">Call Beepo AI  Agent</p>
+          </div>
+
         </div>
       </section>
-      <button className="dashboard-link" onClick={handleGoToAiDemo}>
-        Call Beepo AI Agent
-      </button>
+
+      <section className="dashboard-section">
+        <h2 className="dashboard-subtitle">My Calls</h2>
+
+        <div className="table-wrapper">
+          <table className="usage-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Phone</th>
+                <th>Goal</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody>
+              {calls.length > 0 ? (
+                calls.map((call) => (
+                  <tr key={call.id}>
+                    <td>{call.id}</td>
+                    <td>{call.phone_number}</td>
+                    <td>{call.goal}</td>
+                    <td>{call.status}</td>
+                    <td>{new Date(call.created_at).toLocaleString()}</td>
+                    <td>
+                      <Link
+                        to={`/calls/${call.id}`}
+                        className="table-link"
+                      >
+                        View
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6">No call history found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      
     </div>
   );
 }
