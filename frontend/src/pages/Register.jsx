@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { STRINGS } from "../constants/strings";
-import "../styles/style.css";
+import "../App.css"; 
 
 export default function Register() {
   const [username, setUsername] = useState("");

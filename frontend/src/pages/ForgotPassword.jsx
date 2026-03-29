@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { STRINGS } from "../constants/strings";
-import "../styles/style.css";
+import "../App.css"; 
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');

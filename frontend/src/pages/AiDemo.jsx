@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "../App.css"; 
+import { Link } from "react-router-dom";
 
 export default function AiDemo() {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -82,6 +83,12 @@ export default function AiDemo() {
           {result}
         </div>
       )}
+
+      <div>
+        <Link to="/user-dashboard" className="dashboard-link">
+          Back to User Dashboard
+        </Link>
+      </div>
 
     </div>
   );

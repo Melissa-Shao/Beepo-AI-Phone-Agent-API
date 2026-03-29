@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { STRINGS } from "../constants/strings";
-import "../styles/style.css";
+import "../App.css"; 
 import { useAuth } from "../../utils/Authorization";
 
 export default function Login({}) {
@@ -50,6 +50,8 @@ export default function Login({}) {
 
   return (
     <div className="main-container">
+      <h1>{STRINGS.welcome}</h1>
+      <h4 className='summary'>{STRINGS.summary}</h4>
       <div id="register-modal">
         <h2>{STRINGS.login}</h2>
         {error && <p style={{ color: "red" }}>{error}</p>}

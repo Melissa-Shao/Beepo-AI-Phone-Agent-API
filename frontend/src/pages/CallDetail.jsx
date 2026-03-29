@@ -11,13 +11,10 @@ export default function CallDetail() {
   useEffect(() => {
     const fetchCallDetail = async () => {
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/calls/${id}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/calls/${id}`, {
+          method: "GET",
+          credentials: "include",
+        });
 
         if (!res.ok) {
           throw new Error("Failed to fetch call detail");
@@ -64,10 +61,6 @@ export default function CallDetail() {
           <table className="usage-table">
             <tbody>
               <tr>
-                <th>ID</th>
-                <td>{call.id}</td>
-              </tr>
-              <tr>
                 <th>Phone</th>
                 <td>{call.phone_number}</td>
               </tr>
@@ -77,7 +70,12 @@ export default function CallDetail() {
               </tr>
               <tr>
                 <th>Status</th>
-                <td>{call.status}</td>
+                <td>
+                  {call.status
+                    .split("_")
+                    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                    .join(" ")}
+                </td>
               </tr>
               <tr>
                 <th>Created At</th>

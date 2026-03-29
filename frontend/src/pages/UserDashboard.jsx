@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function UserDashboard() {
   const [myApiCalls, setMyApiCalls] = useState(0);
@@ -8,7 +8,7 @@ export default function UserDashboard() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchUserData = async () => {
       try {
         const [statsRes, historyRes] = await Promise.all([
@@ -45,10 +45,10 @@ export default function UserDashboard() {
     fetchUserData();
   }, []);
 
-   const handleGoToAiDemo = () => {
+  const handleGoToAiDemo = () => {
     if (myApiCalls >= 20) {
       const confirmed = window.confirm(
-        `You have exceeded the 20 free API calls limit (${myApiCalls}/20).\n\nDo you want to continue?`
+        `You have exceeded the 20 free API calls limit (${myApiCalls}/20).\n\nDo you want to continue?`,
       );
 
       if (!confirmed) {
@@ -100,11 +100,10 @@ export default function UserDashboard() {
                 handleGoToAiDemo();
               }
             }}
-            >
+          >
             <h3>AI Phone Agent</h3>
-            <p className="stats-action-text">Call Beepo AI  Agent</p>
+            <p className="stats-action-text">Call Beepo AI Agent</p>
           </div>
-
         </div>
       </section>
 
@@ -115,43 +114,42 @@ export default function UserDashboard() {
           <table className="usage-table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Phone</th>
                 <th>Goal</th>
                 <th>Status</th>
                 <th>Created At</th>
-                <th>View</th>
               </tr>
             </thead>
             <tbody>
               {calls.length > 0 ? (
                 calls.map((call) => (
-                  <tr key={call.id}>
-                    <td>{call.id}</td>
+                  <tr
+                    key={call.id}
+                    onClick={() => navigate(`/calls/${call.id}`)}
+                  >
                     <td>{call.phone_number}</td>
                     <td>{call.goal}</td>
-                    <td>{call.status}</td>
-                    <td>{new Date(call.created_at).toLocaleString()}</td>
                     <td>
-                      <Link
-                        to={`/calls/${call.id}`}
-                        className="table-link"
-                      >
-                        View
-                      </Link>
+                      {call.status
+                        .split("_")
+                        .map(
+                          (word) =>
+                            word.charAt(0).toUpperCase() + word.slice(1),
+                        )
+                        .join(" ")}
                     </td>
+                    <td>{new Date(call.created_at).toLocaleString()}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6">No call history found.</td>
+                  <td colSpan="4">No call history found.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
       </section>
-      
     </div>
   );
 }

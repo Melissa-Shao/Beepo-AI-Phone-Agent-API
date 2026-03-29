@@ -92,7 +92,6 @@ export default function AdminDashboard() {
           <table className="usage-table">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Username</th>
                 <th>Email</th>
                 <th>User Type</th>
@@ -103,7 +102,6 @@ export default function AdminDashboard() {
               {users.length > 0 ? (
                 users.map((user) => (
                   <tr key={user.id}>
-                    <td>{user.id}</td>
                     <td>{user.username}</td>
                     <td>{user.email}</td>
                     <td>{user.user_type}</td>
