@@ -183,4 +183,18 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+router.get("/me", verifyToken, async (req, res) => {
+  try {
+    const user = await pool.query(
+      "SELECT id, email, user_type FROM users WHERE id = $1",
+      [req.user.id]
+    );
+    if (user.rows.length === 0) return res.status(401).json({ message: "User not found" });
+    res.json({ user_type: user.rows[0].user_type, email: user.rows[0].email });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 module.exports = router;
