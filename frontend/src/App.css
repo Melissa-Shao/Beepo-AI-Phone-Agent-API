@@ -302,3 +302,29 @@ body {
   font-size: large;
   margin: 0px 0px 50px 0px
 }
+
+.logout-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #fff1f1;
+  color: #e53e3e;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  border-color: #c53030;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+.logout-button:hover {
+  border-color: #c53030;
+  background-color: #ff6161;
+  color: white;
+}
+
+.page-header {
+  position: relative;
+}
+

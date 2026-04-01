@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LogoutButton from "../components/LogoutButton";
 
 export default function UserDashboard() {
   const [myApiCalls, setMyApiCalls] = useState(0);
@@ -78,78 +79,83 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="dashboard-page">
-      <h1 className="dashboard-title">User Dashboard</h1>
+    <div>
+      <div className='page-header'>
+          <LogoutButton />
+      </div>
+      <div className="dashboard-page">
+        <h1 className="dashboard-title">User Dashboard</h1>
 
-      <section className="dashboard-section">
-        <h2 className="dashboard-subtitle">My API Usage</h2>
+        <section className="dashboard-section">
+          <h2 className="dashboard-subtitle">My API Usage</h2>
 
-        <div className="stats-grid">
-          <div className="stats-card">
-            <h3>API Calls Used</h3>
-            <p>{myApiCalls} / 20</p>
+          <div className="stats-grid">
+            <div className="stats-card">
+              <h3>API Calls Used</h3>
+              <p>{myApiCalls} / 20</p>
+            </div>
+
+            <div
+              className="stats-card stats-card-action"
+              onClick={handleGoToAiDemo}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  handleGoToAiDemo();
+                }
+              }}
+            >
+              <h3>AI Phone Agent</h3>
+              <p className="stats-action-text">Call Beepo AI Agent</p>
+            </div>
           </div>
+        </section>
 
-          <div
-            className="stats-card stats-card-action"
-            onClick={handleGoToAiDemo}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                handleGoToAiDemo();
-              }
-            }}
-          >
-            <h3>AI Phone Agent</h3>
-            <p className="stats-action-text">Call Beepo AI Agent</p>
-          </div>
-        </div>
-      </section>
+        <section className="dashboard-section">
+          <h2 className="dashboard-subtitle">My Calls</h2>
 
-      <section className="dashboard-section">
-        <h2 className="dashboard-subtitle">My Calls</h2>
-
-        <div className="table-wrapper">
-          <table className="usage-table">
-            <thead>
-              <tr>
-                <th>Phone</th>
-                <th>Goal</th>
-                <th>Status</th>
-                <th>Created At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {calls.length > 0 ? (
-                calls.map((call) => (
-                  <tr
-                    key={call.id}
-                    onClick={() => navigate(`/calls/${call.id}`)}
-                  >
-                    <td>{call.phone_number}</td>
-                    <td>{call.goal}</td>
-                    <td>
-                      {call.status
-                        .split("_")
-                        .map(
-                          (word) =>
-                            word.charAt(0).toUpperCase() + word.slice(1),
-                        )
-                        .join(" ")}
-                    </td>
-                    <td>{new Date(call.created_at).toLocaleString()}</td>
-                  </tr>
-                ))
-              ) : (
+          <div className="table-wrapper">
+            <table className="usage-table">
+              <thead>
                 <tr>
-                  <td colSpan="4">No call history found.</td>
+                  <th>Phone</th>
+                  <th>Goal</th>
+                  <th>Status</th>
+                  <th>Created At</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              </thead>
+              <tbody>
+                {calls.length > 0 ? (
+                  calls.map((call) => (
+                    <tr
+                      key={call.id}
+                      onClick={() => navigate(`/calls/${call.id}`)}
+                    >
+                      <td>{call.phone_number}</td>
+                      <td>{call.goal}</td>
+                      <td>
+                        {call.status
+                          .split("_")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() + word.slice(1),
+                          )
+                          .join(" ")}
+                      </td>
+                      <td>{new Date(call.created_at).toLocaleString()}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4">No call history found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

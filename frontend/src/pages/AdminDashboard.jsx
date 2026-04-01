@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import LogoutButton from "../components/LogoutButton";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -65,58 +66,63 @@ export default function AdminDashboard() {
     );
   }
 
- return (
-    <div className="dashboard-page">
-      <h1 className="dashboard-title">Admin Dashboard</h1>
+  return (
+    <div>
+      <div className='page-header'>
+        <LogoutButton />
+      </div>
+      <div className="dashboard-page">
+        <h1 className="dashboard-title">Admin Dashboard</h1>
 
-      <section className="dashboard-section">
-        <h2 className="dashboard-subtitle">System Stats</h2>
+        <section className="dashboard-section">
+          <h2 className="dashboard-subtitle">System Stats</h2>
 
-        <div className="stats-grid">
-          <div className="stats-card">
-            <h3>Total Users</h3>
-            <p>{stats.totalUsers}</p>
+          <div className="stats-grid">
+            <div className="stats-card">
+              <h3>Total Users</h3>
+              <p>{stats.totalUsers}</p>
+            </div>
+
+            <div className="stats-card">
+              <h3>Total API Calls</h3>
+              <p>{stats.totalApiCalls}</p>
+            </div>
           </div>
+        </section>
 
-          <div className="stats-card">
-            <h3>Total API Calls</h3>
-            <p>{stats.totalApiCalls}</p>
-          </div>
-        </div>
-      </section>
+        <section className="dashboard-section">
+          <h2 className="dashboard-subtitle">User API Usage</h2>
 
-      <section className="dashboard-section">
-        <h2 className="dashboard-subtitle">User API Usage</h2>
-
-        <div className="table-wrapper">
-          <table className="usage-table">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>User Type</th>
-                <th>API Calls Used</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.length > 0 ? (
-                users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.username}</td>
-                    <td>{user.email}</td>
-                    <td>{user.user_type}</td>
-                    <td>{user.api_call_count}</td>
-                  </tr>
-                ))
-              ) : (
+          <div className="table-wrapper">
+            <table className="usage-table">
+              <thead>
                 <tr>
-                  <td colSpan="5">No usage data found.</td>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>User Type</th>
+                  <th>API Calls Used</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
+              </thead>
+              <tbody>
+                {users.length > 0 ? (
+                  users.map((user) => (
+                    <tr key={user.id}>
+                      <td>{user.username}</td>
+                      <td>{user.email}</td>
+                      <td>{user.user_type}</td>
+                      <td>{user.api_call_count}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5">No usage data found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
