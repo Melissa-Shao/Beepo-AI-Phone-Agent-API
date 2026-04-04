@@ -19,7 +19,8 @@ Beepo is an AI-powered virtual front desk assistant that bridges the gap between
 - Frontend: React
 - Backend: Node.js
 - Database: PostgreSQL
-- APIs: Google Gemini, Twilio
+- APIs: Google Gemini, Twilio, Resend
+- Authentication: JWT, bcrypt
 
 ## Limitations
 - Users currently receive a notification once they exceed 20 API calls. While service remains active, the warning will persist.
