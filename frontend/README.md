@@ -11,8 +11,8 @@ Beepo is an AI-powered virtual front desk assistant that bridges the gap between
 5. Once the call concludes, return to your dashboard to view the full transcript, a concise call summary, and detailed call information.
 
 ## Team Members
-- Mariko Hockertz
 - Claudia Le
+- Mariko Hockertz
 - Melissa Shao
 
 ## Technical Architecture and Resources used
